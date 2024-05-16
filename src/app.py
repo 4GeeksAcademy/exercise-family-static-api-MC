@@ -25,18 +25,54 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
+
+    #SOLICITA TODOS LOS MIEMBROS
 @app.route('/members', methods=['GET'])
-def handle_hello():
+def get_members():
 
-    # this is how you can use the Family datastructure by calling its methods
     members = jackson_family.get_all_members()
-    response_body = {
-        "hello": "world",
-        "family": members
-    }
-
+    response_body = members
 
     return jsonify(response_body), 200
+
+
+    #AGREGAR UN NUEVO MIEMBRO
+@app.route('/member', methods=['POST'])
+def add_member():
+    body = request.get_json()
+    new_member = {
+        "id": body["id"],
+        "first_name": body["first_name"],
+        "age": body["age"],
+        "lucky_numbers": body["lucky_numbers"]
+    }
+
+    member = jackson_family.add_member(new_member)
+
+    response_body = {"msg": "se dio a luz un nuevo miembro"}
+    return response_body, 200
+
+
+    #SOLICITA UN SOLO MIEMBRO
+@app.route('/member/<int:id>', methods=['GET'])
+def get_only_member(id):
+
+    members_id = jackson_family.get_member(id)
+    response_body = members_id
+
+    return jsonify(response_body), 200
+
+
+    #BORRA UN SOLO MIEMBRO
+@app.route('/member/<int:id>', methods=['DELETE'])
+def delete_member1(id):
+
+    members = jackson_family.delete_member(id)
+    response_body = {"done": members}
+
+    return jsonify(response_body), 200
+
+
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
